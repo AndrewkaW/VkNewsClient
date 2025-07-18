@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -56,11 +58,17 @@ fun VkPost(
                     modifier = Modifier
                         .weight(1f)
                 ) {
-                    Text(text = userName)
+                    Text(
+                        text = userName,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = time)
+                    Text(text = time,
+                        color = MaterialTheme.colorScheme.onSecondary
+                    )
                 }
-                Image(
+                Icon(
+                    tint = MaterialTheme.colorScheme.onSecondary,
                     painter = painterResource(R.drawable.ic_more_vert),
                     contentDescription = "more button"
                 )
@@ -68,9 +76,11 @@ fun VkPost(
             }
             Text(text = postText)
             Image(
+                modifier = Modifier
+                    .fillMaxWidth(),
                 painter = painterResource(postImageId),
                 contentDescription = "post image",
-                contentScale = ContentScale.FillWidth
+                contentScale = ContentScale.Crop
             )
             Row { }
         }
@@ -79,16 +89,37 @@ fun VkPost(
 
 @Preview
 @Composable
-fun PreviewVkPost() {
-    VkPost(
-        userName = "Уволено",
-        userAvatarId = R.drawable.post_comunity_thumbnail,
-        time = "14:00",
-        postText = "кобаныч, когда узнал, что если сотрудникам не платить они начинают умерать от голода",
-        postImageId = R.drawable.post_content_image,
-        views = 206,
-        likes = 491,
-        reposts = 206,
-        comments = 11
-    )
+fun PreviewVkPostLite() {
+    VkNewsClientTheme (darkTheme = false) {
+        VkPost(
+            userName = "Уволено",
+            userAvatarId = R.drawable.post_comunity_thumbnail,
+            time = "14:00",
+            postText = "кобаныч, когда узнал, что если сотрудникам не платить они начинают умерать от голода",
+            postImageId = R.drawable.post_content_image,
+            views = 206,
+            likes = 491,
+            reposts = 206,
+            comments = 11
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewVkPostDark() {
+    VkNewsClientTheme (darkTheme = true) {
+        VkPost(
+            userName = "Уволено",
+            userAvatarId = R.drawable.post_comunity_thumbnail,
+            time = "14:00",
+            postText = "кобаныч, когда узнал, что если сотрудникам не платить они начинают умерать от голода",
+            postImageId = R.drawable.post_content_image,
+            views = 206,
+            likes = 491,
+            reposts = 206,
+            comments = 11
+        )
+    }
+
 }
