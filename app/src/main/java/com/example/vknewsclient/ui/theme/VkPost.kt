@@ -39,58 +39,143 @@ fun VkPost(
 ) {
 
     Card {
-        Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    modifier = Modifier
-                        .size(50.dp)
-                        .clip(CircleShape),
-                    painter = painterResource(userAvatarId),
-                    contentDescription = "user avatar"
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                ) {
-                    Text(
-                        text = userName,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = time,
-                        color = MaterialTheme.colorScheme.onSecondary
-                    )
-                }
-                Icon(
-                    tint = MaterialTheme.colorScheme.onSecondary,
-                    painter = painterResource(R.drawable.ic_more_vert),
-                    contentDescription = "more button"
-                )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
 
-            }
+            ) {
+            PostHeader(
+                userAvatarId = userAvatarId,
+                userName = userName,
+                time = time
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
             Text(text = postText)
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             Image(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .height(400.dp),
                 painter = painterResource(postImageId),
                 contentDescription = "post image",
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.FillWidth
             )
-            Row { }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            PostFooter(
+                views = views,
+                reposts = reposts,
+                comments = comments,
+                likes = likes
+            )
         }
+    }
+}
+
+@Composable
+private fun PostHeader(userAvatarId: Int, userName: String, time: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Image(
+            modifier = Modifier
+                .size(50.dp)
+                .clip(CircleShape),
+            painter = painterResource(userAvatarId),
+            contentDescription = "user avatar"
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Column(
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            Text(
+                text = userName,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = time,
+                color = MaterialTheme.colorScheme.onSecondary
+            )
+        }
+        Icon(
+            tint = MaterialTheme.colorScheme.onSecondary,
+            painter = painterResource(R.drawable.ic_more_vert),
+            contentDescription = "more button"
+        )
+
+    }
+}
+
+@Composable
+private fun PostFooter(views: Int, reposts: Int, comments: Int, likes: Int) {
+    Row(
+        modifier = Modifier
+            .height(40.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = views.toString(),
+            color = MaterialTheme.colorScheme.onSecondary,
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Icon(
+            painter = painterResource(R.drawable.ic_views_count),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSecondary
+        )
+        Spacer(
+            modifier = Modifier
+                .width(8.dp)
+                .weight(1f)
+        )
+
+        Text(
+            text = reposts.toString(),
+            color = MaterialTheme.colorScheme.onSecondary,
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Icon(
+            painter = painterResource(R.drawable.ic_share),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSecondary
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            text = comments.toString(),
+            color = MaterialTheme.colorScheme.onSecondary,
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Icon(
+            painter = painterResource(R.drawable.ic_comment),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSecondary
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            text = likes.toString(),
+            color = MaterialTheme.colorScheme.onSecondary,
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Icon(
+            painter = painterResource(R.drawable.ic_like),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSecondary
+        )
     }
 }
 
 @Preview
 @Composable
 fun PreviewVkPostLite() {
-    VkNewsClientTheme (darkTheme = false) {
+    VkNewsClientTheme(darkTheme = false) {
         VkPost(
             userName = "Уволено",
             userAvatarId = R.drawable.post_comunity_thumbnail,
@@ -108,7 +193,7 @@ fun PreviewVkPostLite() {
 @Preview
 @Composable
 fun PreviewVkPostDark() {
-    VkNewsClientTheme (darkTheme = true) {
+    VkNewsClientTheme(darkTheme = true) {
         VkPost(
             userName = "Уволено",
             userAvatarId = R.drawable.post_comunity_thumbnail,
