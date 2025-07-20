@@ -1,6 +1,7 @@
 package com.example.vknewsclient.ui.theme
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -117,59 +118,35 @@ private fun PostFooter(views: Int, reposts: Int, comments: Int, likes: Int) {
         modifier = Modifier
             .height(40.dp)
             .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            text = views.toString(),
-            color = MaterialTheme.colorScheme.onSecondary,
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Icon(
-            painter = painterResource(R.drawable.ic_views_count),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSecondary
-        )
-        Spacer(
-            modifier = Modifier
-                .width(8.dp)
-                .weight(1f)
-        )
+        Row(modifier = Modifier.weight(1f)) {
+            IconWithText(iconId = R.drawable.ic_views_count, text = views.toString())
+        }
+        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.weight(1f)) {
+            IconWithText(iconId = R.drawable.ic_share, text = reposts.toString())
+            IconWithText(iconId = R.drawable.ic_comment, text = comments.toString())
+            IconWithText(iconId = R.drawable.ic_like, text = likes.toString())
+        }
+    }
+}
 
-        Text(
-            text = reposts.toString(),
-            color = MaterialTheme.colorScheme.onSecondary,
-        )
-        Spacer(modifier = Modifier.width(8.dp))
+@Composable
+private fun IconWithText(iconId: Int, text: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            painter = painterResource(R.drawable.ic_share),
+            painter = painterResource(iconId),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSecondary
         )
-        Spacer(modifier = Modifier.width(8.dp))
-
+        Spacer(modifier = Modifier.width(4.dp))
         Text(
-            text = comments.toString(),
+            text = text,
             color = MaterialTheme.colorScheme.onSecondary,
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Icon(
-            painter = painterResource(R.drawable.ic_comment),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSecondary
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Text(
-            text = likes.toString(),
-            color = MaterialTheme.colorScheme.onSecondary,
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Icon(
-            painter = painterResource(R.drawable.ic_like),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSecondary
         )
     }
+
 }
 
 @Preview
