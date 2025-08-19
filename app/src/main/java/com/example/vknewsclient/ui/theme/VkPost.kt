@@ -1,6 +1,7 @@
 package com.example.vknewsclient.ui.theme
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.vknewsclient.R
 import com.example.vknewsclient.domain.FeedPost
@@ -32,7 +32,8 @@ import com.example.vknewsclient.domain.StatisticType
 @Composable
 fun VkPost(
     modifier: Modifier = Modifier,
-    feedPost: FeedPost = FeedPost()
+    feedPost: FeedPost = FeedPost(),
+    onStatisticItemClickListener: (StatisticItem) -> Unit
 ) {
 
     Card(modifier = modifier) {
@@ -65,7 +66,8 @@ fun VkPost(
             Spacer(modifier = Modifier.height(8.dp))
 
             Statistics(
-                statistics = feedPost.statistics
+                statistics = feedPost.statistics,
+                onItemClickListener = onStatisticItemClickListener
             )
         }
     }
@@ -107,7 +109,8 @@ private fun PostHeader(userAvatarId: Int, userName: String, time: String) {
 
 @Composable
 private fun Statistics(
-    statistics: List<StatisticItem>
+    statistics: List<StatisticItem>,
+    onItemClickListener: (StatisticItem) -> Unit
 ) {
 
     Row(
@@ -119,15 +122,28 @@ private fun Statistics(
     ) {
         val viewsItem = statistics.getItemByType(StatisticType.VIEWS)
         Row(modifier = Modifier.weight(1f)) {
-            IconWithText(iconId = R.drawable.ic_views_count, text = viewsItem.count.toString())
+            IconWithText(
+                iconId = R.drawable.ic_views_count,
+                text = viewsItem.count.toString(),
+                onIconClickListener = { onItemClickListener(viewsItem) }
+            )
         }
         val reposts = statistics.getItemByType(StatisticType.SHARES)
         val comments = statistics.getItemByType(StatisticType.COMMENTS)
         val likes = statistics.getItemByType(StatisticType.LIKES)
         Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.weight(1f)) {
-            IconWithText(iconId = R.drawable.ic_share, text = reposts.count.toString())
-            IconWithText(iconId = R.drawable.ic_comment, text = comments.count.toString())
-            IconWithText(iconId = R.drawable.ic_like, text = likes.count.toString())
+            IconWithText(
+                iconId = R.drawable.ic_share,
+                text = reposts.count.toString(),
+                onIconClickListener = { onItemClickListener(reposts) })
+            IconWithText(
+                iconId = R.drawable.ic_comment,
+                text = comments.count.toString(),
+                onIconClickListener = { onItemClickListener(comments) })
+            IconWithText(
+                iconId = R.drawable.ic_like,
+                text = likes.count.toString(),
+                onIconClickListener = { onItemClickListener(likes) })
         }
     }
 }
@@ -139,8 +155,11 @@ private fun List<StatisticItem>.getItemByType(type: StatisticType): StatisticIte
 }
 
 @Composable
-private fun IconWithText(iconId: Int, text: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+private fun IconWithText(iconId: Int, text: String, onIconClickListener: () -> Unit) {
+    Row(
+        modifier = Modifier.clickable(onClick = { onIconClickListener() }),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Icon(
             painter = painterResource(iconId),
             contentDescription = null,
@@ -155,21 +174,21 @@ private fun IconWithText(iconId: Int, text: String) {
 
 }
 
-@Preview
-@Composable
-fun PreviewVkPostLite() {
-    VkNewsClientTheme(darkTheme = false) {
-        VkPost()
-    }
-}
-
-@Preview
-@Composable
-fun PreviewVkPostDark() {
-    VkNewsClientTheme(darkTheme = true) {
-        VkPost(
-
-        )
-    }
-
-}
+//@Preview
+//@Composable
+//fun PreviewVkPostLite() {
+//    VkNewsClientTheme(darkTheme = false) {
+//        VkPost()
+//    }
+//}
+//
+//@Preview
+//@Composable
+//fun PreviewVkPostDark() {
+//    VkNewsClientTheme(darkTheme = true) {
+//        VkPost(
+//            onStatisticItemClickListener = TODO()
+//        )
+//    }
+//
+//}

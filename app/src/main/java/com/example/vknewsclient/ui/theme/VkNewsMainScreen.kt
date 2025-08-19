@@ -9,14 +9,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.vknewsclient.domain.FeedPost
+
 
 @Composable
 fun MainScreen() {
-
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -44,9 +46,25 @@ fun MainScreen() {
             }
         },
     ) {
-        Box(modifier = Modifier.padding(it)){
+        Box(modifier = Modifier.padding(it)) {
+            val feedPost = remember { mutableStateOf(FeedPost()) }
             VkPost(
                 modifier = Modifier.padding(8.dp),
+                feedPost = feedPost.value,
+                onStatisticItemClickListener = { newItem ->
+                    val oldStatistics = feedPost.value.statistics
+                    val newStatistics = oldStatistics.toMutableList().apply {
+                        replaceAll { oldItem ->
+                            if (oldItem.type == newItem.type) {
+                                oldItem.copy(count = oldItem.count + 1)
+
+                            } else {
+                                oldItem
+                            }
+                        }
+                    }
+                    feedPost.value = feedPost.value.copy(statistics = newStatistics)
+                }
             )
         }
     }
