@@ -24,36 +24,32 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.vknewsclient.R
+import com.example.vknewsclient.domain.FeedPost
+import com.example.vknewsclient.domain.StatisticItem
+import com.example.vknewsclient.domain.StatisticType
 
 
 @Composable
 fun VkPost(
-    userName: String,
-    userAvatarId: Int,
-    time: String,
-    postText: String,
-    postImageId: Int,
-    views: Int,
-    likes: Int,
-    reposts: Int,
-    comments: Int
+    modifier: Modifier = Modifier,
+    feedPost: FeedPost = FeedPost()
 ) {
 
-    Card {
+    Card(modifier = modifier) {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .padding(8.dp),
 
             ) {
             PostHeader(
-                userAvatarId = userAvatarId,
-                userName = userName,
-                time = time
+                userAvatarId = feedPost.userAvatarId,
+                userName = feedPost.communityName,
+                time = feedPost.publicationData
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(text = postText)
+            Text(text = feedPost.postText)
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -61,18 +57,15 @@ fun VkPost(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(400.dp),
-                painter = painterResource(postImageId),
+                painter = painterResource(feedPost.postImageId),
                 contentDescription = "post image",
                 contentScale = ContentScale.FillWidth
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            PostFooter(
-                views = views,
-                reposts = reposts,
-                comments = comments,
-                likes = likes
+            Statistics(
+                statistics = feedPost.statistics
             )
         }
     }
@@ -113,7 +106,10 @@ private fun PostHeader(userAvatarId: Int, userName: String, time: String) {
 }
 
 @Composable
-private fun PostFooter(views: Int, reposts: Int, comments: Int, likes: Int) {
+private fun Statistics(
+    statistics: List<StatisticItem>
+) {
+
     Row(
         modifier = Modifier
             .height(40.dp)
@@ -121,15 +117,25 @@ private fun PostFooter(views: Int, reposts: Int, comments: Int, likes: Int) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        val viewsItem = statistics.getItemByType(StatisticType.VIEWS)
         Row(modifier = Modifier.weight(1f)) {
-            IconWithText(iconId = R.drawable.ic_views_count, text = views.toString())
+            IconWithText(iconId = R.drawable.ic_views_count, text = viewsItem.count.toString())
         }
+        val reposts = statistics.getItemByType(StatisticType.SHARES)
+        val comments = statistics.getItemByType(StatisticType.COMMENTS)
+        val likes = statistics.getItemByType(StatisticType.LIKES)
         Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.weight(1f)) {
-            IconWithText(iconId = R.drawable.ic_share, text = reposts.toString())
-            IconWithText(iconId = R.drawable.ic_comment, text = comments.toString())
-            IconWithText(iconId = R.drawable.ic_like, text = likes.toString())
+            IconWithText(iconId = R.drawable.ic_share, text = reposts.count.toString())
+            IconWithText(iconId = R.drawable.ic_comment, text = comments.count.toString())
+            IconWithText(iconId = R.drawable.ic_like, text = likes.count.toString())
         }
     }
+}
+
+private fun List<StatisticItem>.getItemByType(type: StatisticType): StatisticItem {
+    return this.find { it.type == type } ?: throw IllegalStateException(
+        "Invalid StatisticType"
+    )
 }
 
 @Composable
@@ -153,17 +159,7 @@ private fun IconWithText(iconId: Int, text: String) {
 @Composable
 fun PreviewVkPostLite() {
     VkNewsClientTheme(darkTheme = false) {
-        VkPost(
-            userName = "Уволено",
-            userAvatarId = R.drawable.post_comunity_thumbnail,
-            time = "14:00",
-            postText = "кобаныч, когда узнал, что если сотрудникам не платить они начинают умерать от голода",
-            postImageId = R.drawable.post_content_image,
-            views = 206,
-            likes = 491,
-            reposts = 206,
-            comments = 11
-        )
+        VkPost()
     }
 }
 
@@ -172,15 +168,7 @@ fun PreviewVkPostLite() {
 fun PreviewVkPostDark() {
     VkNewsClientTheme(darkTheme = true) {
         VkPost(
-            userName = "Уволено",
-            userAvatarId = R.drawable.post_comunity_thumbnail,
-            time = "14:00",
-            postText = "кобаныч, когда узнал, что если сотрудникам не платить они начинают умерать от голода",
-            postImageId = R.drawable.post_content_image,
-            views = 206,
-            likes = 491,
-            reposts = 206,
-            comments = 11
+
         )
     }
 
