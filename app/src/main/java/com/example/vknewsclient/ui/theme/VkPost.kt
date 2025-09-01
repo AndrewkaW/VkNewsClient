@@ -33,8 +33,12 @@ import com.example.vknewsclient.domain.StatisticType
 fun VkPost(
     modifier: Modifier = Modifier,
     feedPost: FeedPost = FeedPost(),
-    onStatisticItemClickListener: (StatisticItem) -> Unit
-) {
+    onLikeClickListener: (StatisticItem) -> Unit,
+    onShareClickListener: (StatisticItem) -> Unit,
+    onViewsClickListener: (StatisticItem) -> Unit,
+    onCommentClickListener: (StatisticItem) -> Unit,
+
+    ) {
 
     Card(modifier = modifier) {
         Column(
@@ -67,7 +71,10 @@ fun VkPost(
 
             Statistics(
                 statistics = feedPost.statistics,
-                onItemClickListener = onStatisticItemClickListener
+                onLikeClickListener = onLikeClickListener,
+                onViewsClickListener = onViewsClickListener,
+                onShareClickListener = onShareClickListener,
+                onCommentClickListener = onCommentClickListener,
             )
         }
     }
@@ -110,7 +117,10 @@ private fun PostHeader(userAvatarId: Int, userName: String, time: String) {
 @Composable
 private fun Statistics(
     statistics: List<StatisticItem>,
-    onItemClickListener: (StatisticItem) -> Unit
+    onLikeClickListener: (StatisticItem) -> Unit,
+    onShareClickListener: (StatisticItem) -> Unit,
+    onViewsClickListener: (StatisticItem) -> Unit,
+    onCommentClickListener: (StatisticItem) -> Unit,
 ) {
 
     Row(
@@ -125,7 +135,7 @@ private fun Statistics(
             IconWithText(
                 iconId = R.drawable.ic_views_count,
                 text = viewsItem.count.toString(),
-                onIconClickListener = { onItemClickListener(viewsItem) }
+                onIconClickListener = { onViewsClickListener(viewsItem) }
             )
         }
         val reposts = statistics.getItemByType(StatisticType.SHARES)
@@ -135,15 +145,15 @@ private fun Statistics(
             IconWithText(
                 iconId = R.drawable.ic_share,
                 text = reposts.count.toString(),
-                onIconClickListener = { onItemClickListener(reposts) })
+                onIconClickListener = { onShareClickListener(reposts) })
             IconWithText(
                 iconId = R.drawable.ic_comment,
                 text = comments.count.toString(),
-                onIconClickListener = { onItemClickListener(comments) })
+                onIconClickListener = { onCommentClickListener(comments) })
             IconWithText(
                 iconId = R.drawable.ic_like,
                 text = likes.count.toString(),
-                onIconClickListener = { onItemClickListener(likes) })
+                onIconClickListener = { onLikeClickListener(likes) })
         }
     }
 }
@@ -173,22 +183,3 @@ private fun IconWithText(iconId: Int, text: String, onIconClickListener: () -> U
     }
 
 }
-
-//@Preview
-//@Composable
-//fun PreviewVkPostLite() {
-//    VkNewsClientTheme(darkTheme = false) {
-//        VkPost()
-//    }
-//}
-//
-//@Preview
-//@Composable
-//fun PreviewVkPostDark() {
-//    VkNewsClientTheme(darkTheme = true) {
-//        VkPost(
-//            onStatisticItemClickListener = TODO()
-//        )
-//    }
-//
-//}
