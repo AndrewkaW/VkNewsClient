@@ -1,42 +1,34 @@
 package com.example.vknewsclient.ui.theme
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.example.vknewsclient.MainViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
+    val selectedNavItem by viewModel.selectedNavItem.observeAsState(NavigationItem.Home)
     Scaffold(
         bottomBar = {
             NavigationBar {
-                val selectedItemPosition = remember { mutableIntStateOf(0) }
                 val item = listOf(
                     NavigationItem.Home,
                     NavigationItem.Favorite,
                     NavigationItem.Profile
                 )
-                item.forEachIndexed { index, item ->
+                item.forEach { item ->
                     NavigationBarItem(
-                        selected = selectedItemPosition.intValue == index,
-                        onClick = { selectedItemPosition.intValue = index },
+                        selected = selectedNavItem == item,
+                        onClick = { viewModel.selectNavItem(item) },
                         icon = {
                             Icon(
                                 imageVector = item.icon,
@@ -51,52 +43,11 @@ fun MainScreen(viewModel: MainViewModel) {
             }
         },
     ) {
-        PostsList(modifier = Modifier.padding(it), viewModel = viewModel)
-    }
-}
-
-@Composable
-private fun PostsList(modifier: Modifier = Modifier, viewModel: MainViewModel) {
-    val posts = viewModel.postsLiveData.observeAsState(listOf())
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(
-            top = 16.dp,
-            start = 8.dp,
-            end = 8.dp,
-            bottom = 8.dp
-        ),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(items = posts.value, key = { it.id }) { post ->
-            val dismissBoxState = rememberSwipeToDismissBoxState(
-                confirmValueChange = { value ->
-                    val isDismissed = value in setOf(
-                        SwipeToDismissBoxValue.StartToEnd,
-                        SwipeToDismissBoxValue.EndToStart
-                    )
-                    if (isDismissed) {
-                        viewModel.deletePost(post)
-                    }
-                    return@rememberSwipeToDismissBoxState isDismissed
-                }
-            )
-
-            SwipeToDismissBox(
-                modifier = Modifier.animateItem(),
-                state = dismissBoxState,
-                enableDismissFromStartToEnd = false,
-                enableDismissFromEndToStart = true,
-                backgroundContent = { }
-            ) {
-                VkPost(
-                    feedPost = post,
-                    onLikeClickListener = { viewModel.updateCount(feedPost = post, item = it) },
-                    onShareClickListener = { viewModel.updateCount(feedPost = post, item = it) },
-                    onViewsClickListener = { viewModel.updateCount(feedPost = post, item = it) },
-                    onCommentClickListener = { viewModel.updateCount(feedPost = post, item = it) },
-                )
-            }
+        when(selectedNavItem) {
+            NavigationItem.Favorite -> Text(text = "Favorite", color = Color.Black)
+            NavigationItem.Home -> HomeScreen(modifier = Modifier.padding(it), viewModel = viewModel)
+            NavigationItem.Profile -> Text(text = "Profile", color = Color.Black)
         }
     }
 }
+

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
+import com.example.vknewsclient.ui.theme.NavigationItem
 
 
 class MainViewModel : ViewModel() {
@@ -15,6 +16,13 @@ class MainViewModel : ViewModel() {
                 FeedPost(id = it, communityName = "Dev $it")
             )
         }
+    }
+
+    private val _selectedNavItem = MutableLiveData<NavigationItem>(NavigationItem.Home)
+    val selectedNavItem : LiveData<NavigationItem> = _selectedNavItem
+
+    fun selectNavItem (item: NavigationItem) {
+        _selectedNavItem.value = item
     }
 
     private val _postsLiveData = MutableLiveData<List<FeedPost>>(initialPostList)
