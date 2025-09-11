@@ -1,5 +1,6 @@
 package com.example.vknewsclient.ui.theme
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -11,10 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.vknewsclient.MainViewModel
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.vknewsclient.navigation.AppNavGraph
+import com.example.vknewsclient.navigation.Screen
 
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
@@ -32,7 +38,13 @@ fun MainScreen(viewModel: MainViewModel) {
                 item.forEach { item ->
                     NavigationBarItem(
                         selected = currentRout == item.screen.route,
-                        onClick = { navHostController.navigate(route = item.screen.route) },
+                        onClick = { navHostController.navigate(route = item.screen.route){
+                            launchSingleTop = true
+                            popUpTo(route = Screen.NewsFeet.route) {
+                                saveState = true
+                            }
+                            restoreState = true
+                        } },
                         icon = {
                             Icon(
                                 imageVector = item.icon,
@@ -55,10 +67,21 @@ fun MainScreen(viewModel: MainViewModel) {
                     viewModel = viewModel
                 )
             },
-            favoriteScreenContent = { Text(text = "Favorite", color = Color.Black) },
-            profileScreenContent = { Text(text = "Profile", color = Color.Black) }
+            favoriteScreenContent = { TextCounter("Favorite") },
+            profileScreenContent = { TextCounter("Profile") }
 
         )
     }
+}
+
+@Composable
+fun TextCounter(name: String){
+    var count : Int by rememberSaveable { mutableIntStateOf(0) }
+
+    Text(
+        modifier = Modifier.clickable{ count++ }.padding(16.dp),
+        text = "$name Count: $count",
+        color = Color.Black
+    )
 }
 
