@@ -18,17 +18,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.example.vknewsclient.navigation.AppNavGraph
-import com.example.vknewsclient.navigation.Screen
+import com.example.vknewsclient.navigation.rememberNavBottomBarState
 
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
-    val navHostController = rememberNavController()
+    val navigationState = rememberNavBottomBarState()
     Scaffold(
         bottomBar = {
             NavigationBar {
-                val navBackStackEntry by navHostController.currentBackStackEntryAsState()
+                val navBackStackEntry by navigationState.navHostController.currentBackStackEntryAsState()
                 val currentRout = navBackStackEntry?.destination?.route
                 val item = listOf(
                     NavigationItem.Home,
@@ -38,13 +37,7 @@ fun MainScreen(viewModel: MainViewModel) {
                 item.forEach { item ->
                     NavigationBarItem(
                         selected = currentRout == item.screen.route,
-                        onClick = { navHostController.navigate(route = item.screen.route){
-                            launchSingleTop = true
-                            popUpTo(route = Screen.NewsFeet.route) {
-                                saveState = true
-                            }
-                            restoreState = true
-                        } },
+                        onClick = { navigationState.navigateTo(item.screen.route)},
                         icon = {
                             Icon(
                                 imageVector = item.icon,
@@ -60,7 +53,7 @@ fun MainScreen(viewModel: MainViewModel) {
         },
     ) {
         AppNavGraph(
-            navHostController = navHostController,
+            navHostController = navigationState.navHostController,
             homeScreenContent = {
                 HomeScreen(
                     modifier = Modifier.padding(it),
