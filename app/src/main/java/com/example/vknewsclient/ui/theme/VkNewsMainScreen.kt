@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.navigation.AppNavGraph
+import com.example.vknewsclient.navigation.Screen
 import com.example.vknewsclient.navigation.rememberNavBottomBarState
 
 @Composable
@@ -60,19 +61,28 @@ fun MainScreen() {
     ) {
         AppNavGraph(
             navHostController = navigationState.navHostController,
-            homeScreenContent = {
+            newsFeetScreenContent = {
                 if (postToComments.value == null) {
                     HomeScreen(
                         modifier = Modifier.padding(it),
-                        onCommentsClickListener = { postToComments.value = it }
+                        onCommentsClickListener = {
+                            postToComments.value = it
+                            navigationState.navigateTo(Screen.Comments.route)
+                        }
                     )
-                } else {
-                    CommentsScreen(feedPost = postToComments.value!!) { postToComments.value = null }
                 }
 
             },
             favoriteScreenContent = { TextCounter("Favorite") },
-            profileScreenContent = { TextCounter("Profile") }
+            profileScreenContent = { TextCounter("Profile") },
+            commentsScreenContent = {
+                CommentsScreen(
+                    feedPost = postToComments.value!!,
+                    onBackPressed = {
+                        postToComments.value = null
+                    }
+                )
+            }
 
         )
     }
