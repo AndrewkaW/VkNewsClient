@@ -24,56 +24,64 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.vknewsclient.domain.FeedPost
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.vknewsclient.CommentsViewModel
 import com.example.vknewsclient.domain.PostComment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommentsScreen(
-    feedPost: FeedPost,
-    comments: List<PostComment>,
     onBackPressed: () -> Unit
 ) {
 
-    LazyColumn(
-        contentPadding = PaddingValues(
-            top = 16.dp,
-            start = 8.dp,
-            end = 8.dp,
-            bottom = 8.dp
-        ),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        item {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Comments for FeedPost Id: ${feedPost.id}",
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { onBackPressed() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = null
+    val viewModel: CommentsViewModel = viewModel()
+
+    val screenState = viewModel.commentsScreenState.observeAsState(CommentsScreenState.Initial)
+    val currentState = screenState.value
+    if (currentState is CommentsScreenState.Comments) {
+
+        LazyColumn(
+            contentPadding = PaddingValues(
+                top = 16.dp,
+                start = 8.dp,
+                end = 8.dp,
+                bottom = 8.dp
+            ),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            item {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = "Comments for FeedPost Id: ${currentState.feedPost.id}",
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
+                    },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = { onBackPressed() }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                                contentDescription = null
+                            )
+                        }
                     }
-                }
-            )
+                )
+            }
+            items(items = currentState.comments, key = { it.id }) { comment ->
+                CommentItem(
+                    postComment = comment
+                )
+            }
         }
-        items(items = comments, key = { it.id }) { comment ->
-            CommentItem(
-                postComment = comment
-            )
-        }
+
     }
 }
 

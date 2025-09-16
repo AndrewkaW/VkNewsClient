@@ -8,22 +8,28 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.example.vknewsclient.MainViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.navigation.AppNavGraph
 import com.example.vknewsclient.navigation.rememberNavBottomBarState
 
 @Composable
-fun MainScreen(viewModel: MainViewModel) {
+fun MainScreen() {
     val navigationState = rememberNavBottomBarState()
+    val postToComments: MutableState<FeedPost?> = remember {
+        mutableStateOf(null)
+    }
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -37,7 +43,7 @@ fun MainScreen(viewModel: MainViewModel) {
                 item.forEach { item ->
                     NavigationBarItem(
                         selected = currentRout == item.screen.route,
-                        onClick = { navigationState.navigateTo(item.screen.route)},
+                        onClick = { navigationState.navigateTo(item.screen.route) },
                         icon = {
                             Icon(
                                 imageVector = item.icon,
@@ -55,10 +61,15 @@ fun MainScreen(viewModel: MainViewModel) {
         AppNavGraph(
             navHostController = navigationState.navHostController,
             homeScreenContent = {
-                HomeScreen(
-                    modifier = Modifier.padding(it),
-                    viewModel = viewModel
-                )
+                if (postToComments.value == null) {
+                    HomeScreen(
+                        modifier = Modifier.padding(it),
+                        onCommentsClickListener = { postToComments.value = it }
+                    )
+                } else {
+                    CommentsScreen { postToComments.value = null }
+                }
+
             },
             favoriteScreenContent = { TextCounter("Favorite") },
             profileScreenContent = { TextCounter("Profile") }
@@ -68,11 +79,13 @@ fun MainScreen(viewModel: MainViewModel) {
 }
 
 @Composable
-fun TextCounter(name: String){
-    var count : Int by rememberSaveable { mutableIntStateOf(0) }
+fun TextCounter(name: String) {
+    var count: Int by rememberSaveable { mutableIntStateOf(0) }
 
     Text(
-        modifier = Modifier.clickable{ count++ }.padding(16.dp),
+        modifier = Modifier
+            .clickable { count++ }
+            .padding(16.dp),
         text = "$name Count: $count",
         color = Color.Black
     )
