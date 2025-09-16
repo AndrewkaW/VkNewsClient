@@ -67,7 +67,7 @@ fun MainScreen() {
                         onCommentsClickListener = { postToComments.value = it }
                     )
                 } else {
-                    CommentsScreen { postToComments.value = null }
+                    CommentsScreen(feedPost = postToComments.value!!) { postToComments.value = null }
                 }
 
             },

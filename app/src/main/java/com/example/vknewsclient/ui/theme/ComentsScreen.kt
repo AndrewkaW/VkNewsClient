@@ -32,15 +32,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.vknewsclient.CommentsViewModel
+import com.example.vknewsclient.CommentsViewModelFactory
+import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.PostComment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommentsScreen(
+    feedPost: FeedPost,
     onBackPressed: () -> Unit
 ) {
 
-    val viewModel: CommentsViewModel = viewModel()
+    val viewModel: CommentsViewModel = viewModel(factory = CommentsViewModelFactory(feedPost))
 
     val screenState = viewModel.commentsScreenState.observeAsState(CommentsScreenState.Initial)
     val currentState = screenState.value
@@ -59,7 +62,7 @@ fun CommentsScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = "Comments for FeedPost Id: ${currentState.feedPost.id}",
+                            text = "Comments for FeedPost Id: ${feedPost.id}",
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                     },

@@ -7,7 +7,7 @@ import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.PostComment
 import com.example.vknewsclient.ui.theme.CommentsScreenState
 
-class CommentsViewModel() : ViewModel() {
+class CommentsViewModel(feedPost: FeedPost) : ViewModel() {
 
     private val _commentsScreenState =
         MutableLiveData<CommentsScreenState>(CommentsScreenState.Initial)
@@ -15,7 +15,7 @@ class CommentsViewModel() : ViewModel() {
 
 
     init {
-        loadComments(FeedPost(1))
+        loadComments(feedPost)
     }
 
     fun loadComments(feedPost: FeedPost) {
