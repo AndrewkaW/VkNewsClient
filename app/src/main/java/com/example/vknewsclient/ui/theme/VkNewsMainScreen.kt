@@ -19,10 +19,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.navigation.AppNavGraph
-import com.example.vknewsclient.navigation.Screen
 import com.example.vknewsclient.navigation.rememberNavBottomBarState
 
 @Composable
@@ -35,16 +35,22 @@ fun MainScreen() {
         bottomBar = {
             NavigationBar {
                 val navBackStackEntry by navigationState.navHostController.currentBackStackEntryAsState()
-                val currentRout = navBackStackEntry?.destination?.route
                 val item = listOf(
                     NavigationItem.Home,
                     NavigationItem.Favorite,
                     NavigationItem.Profile
                 )
                 item.forEach { item ->
+                    val selected = navBackStackEntry?.destination?.hierarchy?.any {
+                        it.route == item.screen.route
+                    } ?: false
                     NavigationBarItem(
-                        selected = currentRout == item.screen.route,
-                        onClick = { navigationState.navigateTo(item.screen.route) },
+                        selected = selected,
+                        onClick = {
+                            if (!selected) {
+                                navigationState.navigateTo(item.screen.route)
+                            }
+                        },
                         icon = {
                             Icon(
                                 imageVector = item.icon,
@@ -62,16 +68,13 @@ fun MainScreen() {
         AppNavGraph(
             navHostController = navigationState.navHostController,
             newsFeetScreenContent = {
-                if (postToComments.value == null) {
-                    HomeScreen(
-                        modifier = Modifier.padding(it),
-                        onCommentsClickListener = {
-                            postToComments.value = it
-                            navigationState.navigateTo(Screen.Comments.route)
-                        }
-                    )
-                }
-
+                HomeScreen(
+                    modifier = Modifier.padding(it),
+                    onCommentsClickListener = {
+                        postToComments.value = it
+                        navigationState.navigationToComments()
+                    }
+                )
             },
             favoriteScreenContent = { TextCounter("Favorite") },
             profileScreenContent = { TextCounter("Profile") },
@@ -79,7 +82,7 @@ fun MainScreen() {
                 CommentsScreen(
                     feedPost = postToComments.value!!,
                     onBackPressed = {
-                        postToComments.value = null
+                        navigationState.navHostController.popBackStack()
                     }
                 )
             }
@@ -100,4 +103,3 @@ fun TextCounter(name: String) {
         color = Color.Black
     )
 }
-

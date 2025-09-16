@@ -9,12 +9,12 @@ import com.example.vknewsclient.R
 import com.example.vknewsclient.navigation.Screen
 
 sealed class NavigationItem(
-    val screen : Screen,
-    val titleResId : Int,
-    val icon : ImageVector
+    val screen: Screen,
+    val titleResId: Int,
+    val icon: ImageVector
 ) {
     data object Home : NavigationItem(
-        screen = Screen.NewsFeet,
+        screen = Screen.Home,
         titleResId = R.string.navigation_item_main,
         icon = Icons.Outlined.Home
     )
@@ -24,6 +24,7 @@ sealed class NavigationItem(
         titleResId = R.string.navigation_item_favorite,
         icon = Icons.Outlined.Favorite
     )
+
     data object Profile : NavigationItem(
         screen = Screen.Profile,
         titleResId = R.string.navigation_item_profile,
