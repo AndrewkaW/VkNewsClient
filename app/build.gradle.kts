@@ -53,6 +53,8 @@ dependencies {
     //Navigation Jetpack Compose integration
     implementation(libs.navigation.compose)
     implementation(libs.androidx.navigation.compose.android)
+    //Gson
+    implementation(libs.gson)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
