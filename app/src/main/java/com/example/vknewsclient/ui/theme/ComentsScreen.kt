@@ -62,7 +62,7 @@ fun CommentsScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = "Comments for FeedPost Id: ${feedPost.id}",
+                            text = "Comments for FeedPost Id: ${feedPost.id} /n${feedPost.postText}",
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                     },
