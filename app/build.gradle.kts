@@ -56,6 +56,9 @@ dependencies {
     //Gson
     implementation(libs.gson)
 
+    //Coil
+    implementation(libs.coil)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
