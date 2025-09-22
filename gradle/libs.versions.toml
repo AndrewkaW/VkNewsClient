@@ -18,9 +18,10 @@ coil_version = "3.0.4"
 
 
 [libraries]
-#Gson
+#vk
 android-sdk-api = { module = "com.vk:android-sdk-api", version.ref = "androidSdkCore" }
 android-sdk-core = { module = "com.vk:android-sdk-core", version.ref = "androidSdkCore" }
+#Gson
 gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "gson_version" }
 #Coil
 coil = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil_version" }
