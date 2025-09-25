@@ -1,7 +1,10 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("vkid.manifest.placeholders")
 }
 
 android {
@@ -16,6 +19,15 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        addManifestPlaceholders(
+            mapOf(
+                "VKIDClientID" to getVkAppId(),
+                "VKIDClientSecret" to getVkAppSecret(),
+                "VKIDRedirectHost" to "vk.ru",
+                "VKIDRedirectScheme" to "vk${getVkAppId()}",
+            )
+        )
     }
 
     buildTypes {
@@ -62,6 +74,10 @@ dependencies {
     //VK
     implementation(libs.android.sdk.core)
     implementation(libs.android.sdk.api)
+    //VKID
+    implementation(libs.vkid)
+    implementation(libs.captcha.okhttp)
+    implementation(libs.captcha.core)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -70,4 +86,23 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+private fun error() = logger.error(
+    "Warning! Build will not work!\nCreate the 'secrets.properties' file in the 'sample/app' folder and add your 'VKIDClientID' and 'VKIDClientSecret' to it." +
+            "\nFor more information, refer to the 'README.md' file."
+)
+
+private fun getVkAppId(): String {
+    val properties = Properties()
+    properties.load(file("/secrets.properties").inputStream())
+    val clientId = properties["VKIDClientID"] ?: error()
+    return clientId.toString()
+}
+
+private fun getVkAppSecret(): String {
+    val properties = Properties()
+    properties.load(file("/secrets.properties").inputStream())
+    val clientSecret = properties["VKIDClientSecret"] ?: error()
+    return clientSecret.toString()
 }

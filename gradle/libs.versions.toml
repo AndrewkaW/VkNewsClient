@@ -9,13 +9,14 @@ espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.9.4"
 activityCompose = "1.10.1"
 composeBom = "2025.09.00"
-runtimeLivedata = "1.9.1"
-navigation_version = "2.9.4"
-navigationComposeAndroid = "2.9.4"
+runtimeLivedata = "1.9.2"
+navigation_version = "2.9.5"
+navigationComposeAndroid = "2.9.5"
 gson_version = "2.11.0"
 
 coil_version = "3.0.4"
-
+vkid = "2.5.1"
+captcha = "0.0.6"
 
 [libraries]
 #vk
@@ -43,6 +44,9 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation_version" }
 androidx-navigation-compose-android = { group = "androidx.navigation", name = "navigation-compose-android", version.ref = "navigationComposeAndroid" }
+vkid = { module = "com.vk.id:vkid", version.ref = "vkid" }
+captcha-core = { group = "com.vk.id.captcha", name = "vkid-captcha", version.ref = "captcha" }
+captcha-okhttp = { group = "com.vk.id.captcha", name = "okhttp-interceptors", version.ref = "captcha" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
