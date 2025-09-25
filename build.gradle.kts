@@ -23,9 +23,9 @@ vkidManifestPlaceholders {
         clientId = clientId.toString(),
         clientSecret = clientSecret.toString(),
     )
-    // Или укажите значения явно через properties, если не хотите использовать плейсхолдеры.
-    vkidRedirectHost = "vk.ru" // Обычно vk.ru.
-    vkidRedirectScheme = "vk${clientId}" // Строго в формате vk{ID приложения}.
+
+    vkidRedirectHost = "vk.ru"
+    vkidRedirectScheme = "vk${clientId}"
     vkidClientId = clientId.toString()
     vkidClientSecret = clientSecret.toString()
 }

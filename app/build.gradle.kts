@@ -71,9 +71,6 @@ dependencies {
     //Coil
     implementation(libs.coil)
 
-    //VK
-    implementation(libs.android.sdk.core)
-    implementation(libs.android.sdk.api)
     //VKID
     implementation(libs.vkid)
     implementation(libs.captcha.okhttp)

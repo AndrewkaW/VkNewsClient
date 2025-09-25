@@ -1,6 +1,5 @@
 [versions]
 agp = "8.10.1"
-androidSdkCore = "4.1.0"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -19,9 +18,6 @@ vkid = "2.5.1"
 captcha = "0.0.6"
 
 [libraries]
-#vk
-android-sdk-api = { module = "com.vk:android-sdk-api", version.ref = "androidSdkCore" }
-android-sdk-core = { module = "com.vk:android-sdk-core", version.ref = "androidSdkCore" }
 #Gson
 gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "gson_version" }
 #Coil
@@ -44,6 +40,8 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation_version" }
 androidx-navigation-compose-android = { group = "androidx.navigation", name = "navigation-compose-android", version.ref = "navigationComposeAndroid" }
+
+#vk
 vkid = { module = "com.vk.id:vkid", version.ref = "vkid" }
 captcha-core = { group = "com.vk.id.captcha", name = "vkid-captcha", version.ref = "captcha" }
 captcha-okhttp = { group = "com.vk.id.captcha", name = "okhttp-interceptors", version.ref = "captcha" }
