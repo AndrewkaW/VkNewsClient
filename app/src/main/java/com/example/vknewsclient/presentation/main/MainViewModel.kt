@@ -1,23 +1,23 @@
-package com.example.vknewsclient
+package com.example.vknewsclient.presentation.main
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.vknewsclient.ui.theme.AuthState
 import com.vk.id.AccessToken
+import com.vk.id.VKID
 import com.vk.id.VKIDAuthFail
 import com.vk.id.auth.VKIDAuthCallback
 
-class MainViewModel() : ViewModel() {
+class MainViewModel(vkid: VKID) : ViewModel() {
 
     private val _authState = MutableLiveData<AuthState>(AuthState.Initial)
     val authState: LiveData<AuthState> = _authState
 
-    private var token : String? = null
-
     init {
-        _authState.value = if (!token.isNullOrBlank()) {
+        val token = vkid.accessToken
+        val loggedIn = token != null
+        _authState.value = if (loggedIn) {
             AuthState.Authorized
         } else {
             AuthState.NotAuthorized
@@ -26,7 +26,6 @@ class MainViewModel() : ViewModel() {
 
     val vkAuthCallback = object : VKIDAuthCallback {
         override fun onAuth(accessToken: AccessToken) {
-            token = accessToken.token
             _authState.value = AuthState.Authorized
             Log.i("MainViewModel", "Auth Access : ${accessToken.userData}")
         }
@@ -36,4 +35,6 @@ class MainViewModel() : ViewModel() {
             Log.e("MainViewModel", "Auth Failed : ${fail.description}")
         }
     }
+
+
 }

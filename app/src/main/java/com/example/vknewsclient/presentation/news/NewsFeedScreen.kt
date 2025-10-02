@@ -1,4 +1,4 @@
-package com.example.vknewsclient.ui.theme
+package com.example.vknewsclient.presentation.news
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,12 +12,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.vknewsclient.NewFeedViewModel
 import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.ui.theme.NewsFeedScreenState.Posts
+import com.example.vknewsclient.presentation.news.NewsFeedScreenState.Posts
 
 @Composable
-fun HomeScreen(modifier: Modifier, onCommentsClickListener: (FeedPost) -> Unit) {
+fun NewsFeedScreen(modifier: Modifier, onCommentsClickListener: (FeedPost) -> Unit) {
 
     val viewModel: NewFeedViewModel = viewModel()
 
