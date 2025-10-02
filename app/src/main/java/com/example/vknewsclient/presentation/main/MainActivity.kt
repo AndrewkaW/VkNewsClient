@@ -7,6 +7,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.vknewsclient.ui.theme.VkNewsClientTheme
 import com.vk.id.VKID
+import java.util.Properties
 
 class MainActivity : ComponentActivity() {
 
@@ -35,6 +36,13 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun getToken(): String {
+        val properties = Properties()
+        val file = openFileInput("app/secrets.properties")
+        properties.load( file) // изменить адрес файла
+        return properties["NewsAccessToken"].toString()
     }
 }
 

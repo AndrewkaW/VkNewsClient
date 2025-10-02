@@ -1,6 +1,5 @@
 package com.example.vknewsclient.presentation.news
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.example.vknewsclient.R
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
@@ -32,7 +33,7 @@ import com.example.vknewsclient.domain.StatisticType
 @Composable
 fun VkPost(
     modifier: Modifier = Modifier,
-    feedPost: FeedPost = FeedPost(),
+    feedPost: FeedPost,
     onLikeClickListener: (StatisticItem) -> Unit,
     onShareClickListener: (StatisticItem) -> Unit,
     onViewsClickListener: (StatisticItem) -> Unit,
@@ -48,7 +49,7 @@ fun VkPost(
 
             ) {
             PostHeader(
-                userAvatarId = feedPost.userAvatarId,
+                userImageUrl = feedPost.communityImageUrl,
                 userName = feedPost.communityName,
                 time = feedPost.publicationData
             )
@@ -58,11 +59,11 @@ fun VkPost(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Image(
+            AsyncImage(
+                model = feedPost.postImageUrl,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(400.dp),
-                painter = painterResource(feedPost.postImageId),
+                    .wrapContentHeight(),
                 contentDescription = "post image",
                 contentScale = ContentScale.FillWidth
             )
@@ -81,13 +82,13 @@ fun VkPost(
 }
 
 @Composable
-private fun PostHeader(userAvatarId: Int, userName: String, time: String) {
+private fun PostHeader(userImageUrl: String, userName: String, time: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Image(
+        AsyncImage(
+            model = userImageUrl,
             modifier = Modifier
                 .size(50.dp)
                 .clip(CircleShape),
-            painter = painterResource(userAvatarId),
             contentDescription = "user avatar"
         )
         Spacer(modifier = Modifier.width(8.dp))
