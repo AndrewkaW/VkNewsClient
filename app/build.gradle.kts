@@ -22,12 +22,14 @@ android {
 
         addManifestPlaceholders(
             mapOf(
-                "VKIDClientID" to getVkAppId(),
-                "VKIDClientSecret" to getVkAppSecret(),
+                "VKIDClientID" to getProperties("VKIDClientID"),
+                "VKIDClientSecret" to getProperties("VKIDClientSecret"),
                 "VKIDRedirectHost" to "vk.ru",
-                "VKIDRedirectScheme" to "vk${getVkAppId()}",
+                "VKIDRedirectScheme" to "vk${getProperties("VKIDClientID")}",
             )
         )
+
+        buildConfigField("String", "NEWS_TOKEN", "\"${ getProperties("NewsAccessToken")}\"")
     }
 
     buildTypes {
@@ -48,6 +50,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -94,9 +97,16 @@ dependencies {
 }
 
 private fun error() = logger.error(
-    "Warning! Build will not work!\nCreate the 'secrets.properties' file in the 'sample/app' folder and add your 'VKIDClientID' and 'VKIDClientSecret' to it." +
+    "Warning! Build will not work!\nCreate the 'secrets.properties' file in the 'sample/app' folder and add your 'VKIDClientID','VKIDClientSecret' and 'NewsAccessToken' to it." +
             "\nFor more information, refer to the 'README.md' file."
 )
+
+private fun getProperties(key: String): String {
+    val properties = Properties()
+    properties.load(file("/secrets.properties").inputStream())
+    val clientId = properties[key.toString()] ?: error()
+    return clientId.toString()
+}
 
 private fun getVkAppId(): String {
     val properties = Properties()
@@ -110,4 +120,11 @@ private fun getVkAppSecret(): String {
     properties.load(file("/secrets.properties").inputStream())
     val clientSecret = properties["VKIDClientSecret"] ?: error()
     return clientSecret.toString()
+}
+
+private fun getNewsToken(): String{
+    val properties = Properties()
+    properties.load(file("/secrets.properties").inputStream())
+    val clientSecret = properties["NewsAccessToken"] ?: error()
+    return "\"${ clientSecret}\""
 }

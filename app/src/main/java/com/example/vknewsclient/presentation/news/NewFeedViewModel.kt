@@ -8,12 +8,10 @@ import com.example.vknewsclient.data.mapper.NewsFeedMapper
 import com.example.vknewsclient.data.network.ApiFactory
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
+import com.example.vknewsclient.BuildConfig
 import kotlinx.coroutines.launch
-import java.io.File
-import java.util.Properties
 
-class NewFeedViewModel : ViewModel() {
-
+class NewFeedViewModel() : ViewModel() {
 
     private val initialState = NewsFeedScreenState.Initial
 
@@ -22,21 +20,16 @@ class NewFeedViewModel : ViewModel() {
 
     private val mapper = NewsFeedMapper()
 
-
-    private var newsDataAccessToken: String
-
+    private val newsToken = BuildConfig.NEWS_TOKEN
 
     init {
-        newsDataAccessToken = {TODO()}
         loadNews()
     }
 
-
-
-    private fun loadNews() {
+    fun loadNews() {
         viewModelScope.launch {
             val result =
-                ApiFactory.apiService.loadNews(newsDataAccessToken.toString(), "it technology")
+                ApiFactory.apiService.loadNews(newsToken.toString(), "it technology")
             val newsList = mapper.mapNewsItemsToFeedPosts(result)
             _screenState.value = NewsFeedScreenState.Posts(posts = newsList)
         }
@@ -79,4 +72,5 @@ class NewFeedViewModel : ViewModel() {
         updatedList.remove(deletedPost)
         _screenState.value = NewsFeedScreenState.Posts(posts = updatedList)
     }
+
 }

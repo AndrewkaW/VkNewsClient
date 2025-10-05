@@ -35,6 +35,4 @@ class MainViewModel(vkid: VKID) : ViewModel() {
             Log.e("MainViewModel", "Auth Failed : ${fail.description}")
         }
     }
-
-
 }
