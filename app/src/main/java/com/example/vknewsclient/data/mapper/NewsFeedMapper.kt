@@ -17,12 +17,12 @@ class NewsFeedMapper {
                     communityName = item.sourceName ?: "",
                     communityImageUrl = item.sourceIconUrl,
                     publicationData = dateFormat(item.publicationDate),
-                    postText = item.description,
+                    postText = item.description ?: "",
                     postImageUrl = item.contentImageUrl,
                     statistics = listOf(
-                        StatisticItem(StatisticType.LIKES, (0..1000).random()),
-                        StatisticItem(StatisticType.VIEWS, (0..1000).random()),
-                        StatisticItem(StatisticType.SHARES, (0..1000).random()),
+                        StatisticItem(StatisticType.LIKES, (0..10000).random()),
+                        StatisticItem(StatisticType.VIEWS, (0..10000).random()),
+                        StatisticItem(StatisticType.SHARES, (0..10000).random()),
                         StatisticItem(
                             StatisticType.COMMENTS,
                             if (item.keywords != null) item.keywords.count() else 0
