@@ -20,9 +20,9 @@ class NewsFeedMapper {
                     postText = item.description ?: "",
                     postImageUrl = item.contentImageUrl,
                     statistics = listOf(
-                        StatisticItem(StatisticType.LIKES, (0..10000).random()),
-                        StatisticItem(StatisticType.VIEWS, (0..10000).random()),
-                        StatisticItem(StatisticType.SHARES, (0..10000).random()),
+                        StatisticItem(StatisticType.LIKES, (0..3000).random()),
+                        StatisticItem(StatisticType.VIEWS, (0..2000).random()),
+                        StatisticItem(StatisticType.SHARES, (0..8000).random()),
                         StatisticItem(
                             StatisticType.COMMENTS,
                             if (item.keywords != null) item.keywords.count() else 0
@@ -34,7 +34,7 @@ class NewsFeedMapper {
         return result
     }
 
-    private fun dateFormat(dateDto : String) : String{
+    private fun dateFormat(dateDto: String): String {
         return try {
             val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
             val outputFormat = SimpleDateFormat("d MMMM yyyy, HH:mm", Locale.getDefault())

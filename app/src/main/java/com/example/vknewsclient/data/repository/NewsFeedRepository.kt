@@ -22,18 +22,24 @@ class NewsFeedRepository {
         return newsList
     }
 
-    suspend fun addLike(feedPost: FeedPost) {
+    fun changeLikesStatus(feedPost: FeedPost) {
         val oldStatistics = feedPost.statistics.toMutableList()
         val newStatistics = oldStatistics.apply {
             replaceAll { item ->
                 if (item.type == StatisticType.LIKES) {
-                    item.copy(count = item.count + 1)
+                    item.copy(
+                        count = if (feedPost.isFavorite) {
+                            item.count - 1
+                        } else {
+                            item.count + 1
+                        }
+                    )
                 } else {
                     item
                 }
             }
         }
-        val newPost = feedPost.copy(statistics = newStatistics, isFavorite = true)
+        val newPost = feedPost.copy(statistics = newStatistics, isFavorite = !feedPost.isFavorite)
         val postIndex = _feedPosts.indexOf(feedPost)
         _feedPosts[postIndex] = newPost
     }

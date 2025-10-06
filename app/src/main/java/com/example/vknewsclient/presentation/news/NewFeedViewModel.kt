@@ -18,7 +18,6 @@ class NewFeedViewModel() : ViewModel() {
 
     private val repository = NewsFeedRepository()
 
-
     init {
         loadNews()
     }
@@ -31,17 +30,10 @@ class NewFeedViewModel() : ViewModel() {
     }
 
     fun changeLike(feedPost: FeedPost) {
-        if (!feedPost.isFavorite) {
-            likePost(feedPost)
-        }
+        repository.changeLikesStatus(feedPost)
+        _screenState.value = NewsFeedScreenState.Posts(posts = repository.feedPosts)
     }
 
-    private fun likePost(feedPost: FeedPost) {
-        viewModelScope.launch {
-            repository.addLike(feedPost = feedPost)
-            _screenState.value = NewsFeedScreenState.Posts(posts = repository.feedPosts)
-        }
-    }
 
     fun updateCount(feedPost: FeedPost, item: StatisticItem) {
         val currentState = screenState.value
