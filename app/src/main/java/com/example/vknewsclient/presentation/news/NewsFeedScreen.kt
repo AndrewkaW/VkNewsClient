@@ -76,7 +76,9 @@ fun FeedPosts(
             ) {
                 VkPost(
                     feedPost = post,
-                    onLikeClickListener = { viewModel.updateCount(feedPost = post, item = it) },
+                    onLikeClickListener = {
+                        viewModel.changeLike(post)
+                    },
                     onShareClickListener = { viewModel.updateCount(feedPost = post, item = it) },
                     onViewsClickListener = { viewModel.updateCount(feedPost = post, item = it) },
                     onCommentClickListener = { onCommentsClickListener(post) },

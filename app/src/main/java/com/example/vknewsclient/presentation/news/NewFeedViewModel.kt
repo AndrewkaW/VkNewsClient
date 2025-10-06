@@ -4,11 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.vknewsclient.data.mapper.NewsFeedMapper
-import com.example.vknewsclient.data.network.ApiFactory
+import com.example.vknewsclient.data.repository.NewsFeedRepository
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
-import com.example.vknewsclient.BuildConfig
 import kotlinx.coroutines.launch
 
 class NewFeedViewModel() : ViewModel() {
@@ -18,9 +16,8 @@ class NewFeedViewModel() : ViewModel() {
     private val _screenState = MutableLiveData<NewsFeedScreenState>(initialState)
     val screenState: LiveData<NewsFeedScreenState> = _screenState
 
-    private val mapper = NewsFeedMapper()
+    private val repository = NewsFeedRepository()
 
-    private val newsToken = BuildConfig.NEWS_TOKEN
 
     init {
         loadNews()
@@ -28,10 +25,21 @@ class NewFeedViewModel() : ViewModel() {
 
     fun loadNews() {
         viewModelScope.launch {
-            val result =
-                ApiFactory.apiService.loadNews(newsToken.toString(), "it technology")
-            val newsList = mapper.mapNewsItemsToFeedPosts(result)
+            val newsList = repository.loadNewsPosts()
             _screenState.value = NewsFeedScreenState.Posts(posts = newsList)
+        }
+    }
+
+    fun changeLike(feedPost: FeedPost) {
+        if (!feedPost.isFavorite) {
+            likePost(feedPost)
+        }
+    }
+
+    private fun likePost(feedPost: FeedPost) {
+        viewModelScope.launch {
+            repository.addLike(feedPost = feedPost)
+            _screenState.value = NewsFeedScreenState.Posts(posts = repository.feedPosts)
         }
     }
 
