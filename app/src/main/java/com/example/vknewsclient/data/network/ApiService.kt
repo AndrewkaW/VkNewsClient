@@ -10,4 +10,11 @@ interface ApiService {
         @Query("apikey") token: String,
         @Query("q") theme: String
     ): NewsItemResponseDto
+
+    @GET("latest")
+    suspend fun loadNews(
+        @Query("apikey") token: String,
+        @Query("q") theme: String,
+        @Query("page") nextPage: String,
+    ): NewsItemResponseDto
 }

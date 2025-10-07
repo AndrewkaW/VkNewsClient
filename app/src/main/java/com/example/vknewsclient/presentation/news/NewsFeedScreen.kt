@@ -1,19 +1,27 @@
 package com.example.vknewsclient.presentation.news
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.presentation.news.NewsFeedScreenState.Posts
+import com.example.vknewsclient.ui.theme.DarkBlue
 
 @Composable
 fun NewsFeedScreen(modifier: Modifier, onCommentsClickListener: (FeedPost) -> Unit) {
@@ -29,7 +37,8 @@ fun NewsFeedScreen(modifier: Modifier, onCommentsClickListener: (FeedPost) -> Un
             posts = currentState.posts,
             modifier = modifier,
             viewModel = viewModel,
-            onCommentsClickListener = onCommentsClickListener
+            onCommentsClickListener = onCommentsClickListener,
+            nextDateIsLoading = currentState.loadingNextPosts
         )
 
         is NewsFeedScreenState.Initial -> {}
@@ -41,7 +50,8 @@ fun FeedPosts(
     posts: List<FeedPost>,
     modifier: Modifier,
     viewModel: NewFeedViewModel,
-    onCommentsClickListener: (FeedPost) -> Unit
+    onCommentsClickListener: (FeedPost) -> Unit,
+    nextDateIsLoading: Boolean
 ) {
     LazyColumn(
         modifier = modifier,
@@ -83,6 +93,22 @@ fun FeedPosts(
                     onViewsClickListener = { viewModel.updateCount(feedPost = post, item = it) },
                     onCommentClickListener = { onCommentsClickListener(post) },
                 )
+            }
+        }
+
+        item {
+            if (nextDateIsLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator(color = DarkBlue)
+                }
+            } else {
+                SideEffect { viewModel.loadNextNews() }
             }
         }
     }

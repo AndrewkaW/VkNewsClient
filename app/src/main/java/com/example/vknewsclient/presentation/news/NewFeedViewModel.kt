@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.vknewsclient.data.repository.NewsFeedRepository
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class NewFeedViewModel() : ViewModel() {
@@ -24,9 +25,18 @@ class NewFeedViewModel() : ViewModel() {
 
     fun loadNews() {
         viewModelScope.launch {
+            delay(500)
             val newsList = repository.loadNewsPosts()
             _screenState.value = NewsFeedScreenState.Posts(posts = newsList)
         }
+    }
+
+    fun loadNextNews() {
+        _screenState.value = NewsFeedScreenState.Posts(
+            posts = repository.feedPosts,
+            loadingNextPosts = true
+        )
+        loadNews()
     }
 
     fun changeLike(feedPost: FeedPost) {
@@ -72,5 +82,4 @@ class NewFeedViewModel() : ViewModel() {
         updatedList.remove(deletedPost)
         _screenState.value = NewsFeedScreenState.Posts(posts = updatedList)
     }
-
 }

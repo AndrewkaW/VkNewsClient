@@ -1,5 +1,6 @@
 package com.example.vknewsclient.data.repository
 
+import android.util.Log
 import com.example.vknewsclient.BuildConfig
 import com.example.vknewsclient.data.mapper.NewsFeedMapper
 import com.example.vknewsclient.data.network.ApiFactory
@@ -14,12 +15,23 @@ class NewsFeedRepository {
     val feedPosts: List<FeedPost>
         get() = _feedPosts.toList()
 
+    private var nextPage: String? = null
+
     suspend fun loadNewsPosts(): List<FeedPost> {
-        val result =
-            ApiFactory.apiService.loadNews(newsToken.toString(), "it technology")
+        val startPage = nextPage
+        if (startPage == null && _feedPosts.isNotEmpty()) {
+            return feedPosts
+        }
+        val result = if (startPage == null) {
+            ApiFactory.apiService.loadNews(newsToken, "it technology")
+        } else {
+            ApiFactory.apiService.loadNews(newsToken, "it technology", startPage)
+        }
+        Log.d("NewsFeedRepository", "loadNewsPosts: ${result.nextPage}")
+        nextPage = result.nextPage
         val newsList = mapper.mapNewsItemsToFeedPosts(result)
         _feedPosts.addAll(newsList)
-        return newsList
+        return feedPosts
     }
 
     fun changeLikesStatus(feedPost: FeedPost) {
