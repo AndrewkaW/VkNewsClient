@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.vknewsclient.data.repository.NewsFeedRepository
 import com.example.vknewsclient.domain.FeedPost
 import com.example.vknewsclient.domain.StatisticItem
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class NewFeedViewModel() : ViewModel() {
@@ -24,19 +23,48 @@ class NewFeedViewModel() : ViewModel() {
     }
 
     fun loadNews() {
+        val currentState = _screenState.value
+        // Если это уже список постов, то включаем индикатор обновления
+        if (currentState is NewsFeedScreenState.Posts) {
+            _screenState.value = currentState.copy(isRefreshing = true)
+        }
+
         viewModelScope.launch {
-            delay(500)
-            val newsList = repository.loadNewsPosts()
-            _screenState.value = NewsFeedScreenState.Posts(posts = newsList)
+            // Загружаем посты (при pull-to-refresh это будут самые свежие)
+            val freshPosts = repository.loadNewsPosts()
+            // Обновляем состояние с новым списком и выключаем индикатор
+            _screenState.value = NewsFeedScreenState.Posts(posts = freshPosts, isRefreshing = false)
         }
     }
 
     fun loadNextNews() {
-        _screenState.value = NewsFeedScreenState.Posts(
-            posts = repository.feedPosts,
-            loadingNextPosts = true
-        )
-        loadNews()
+        val currentState = _screenState.value
+        // Проверяем, что текущее состояние - это Posts и что уже не идет загрузка
+        if (currentState !is NewsFeedScreenState.Posts || currentState.loadingNextPosts) {
+            return
+        }
+
+        // 1. Устанавливаем флаг, что началась загрузка следующей страницы
+        _screenState.value = currentState.copy(loadingNextPosts = true)
+
+        viewModelScope.launch {
+            // 2. Загружаем СЛЕДУЮЩУЮ порцию новостей
+            // ПРИМЕЧАНИЕ: Ваш repository.loadNewsPosts() должен уметь загружать следующую страницу
+            val newPosts = repository.loadNewsPosts()
+
+            // 3. Создаем новый объединенный список
+            val existingPosts = currentState.posts
+            val mergedPosts = existingPosts.toMutableList().apply {
+                addAll(newPosts)
+            }.toList()
+
+            // 4. Обновляем состояние с объединенным списком и выключаем индикаторы
+            _screenState.value = NewsFeedScreenState.Posts(
+                posts = mergedPosts,
+                loadingNextPosts = false,
+                isRefreshing = false // Также выключаем pull-to-refresh на всякий случай
+            )
+        }
     }
 
     fun changeLike(feedPost: FeedPost) {

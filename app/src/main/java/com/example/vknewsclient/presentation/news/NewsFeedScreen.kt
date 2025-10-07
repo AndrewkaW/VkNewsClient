@@ -1,5 +1,6 @@
 package com.example.vknewsclient.presentation.news
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,8 +10,10 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -20,9 +23,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.presentation.news.NewsFeedScreenState.Posts
 import com.example.vknewsclient.ui.theme.DarkBlue
 
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun NewsFeedScreen(modifier: Modifier, onCommentsClickListener: (FeedPost) -> Unit) {
 
@@ -32,29 +36,37 @@ fun NewsFeedScreen(modifier: Modifier, onCommentsClickListener: (FeedPost) -> Un
 
     val currentState = screenState.value
 
-    when (currentState) {
-        is Posts -> FeedPosts(
-            posts = currentState.posts,
+    if (currentState is NewsFeedScreenState.Initial) {
+        Box(
             modifier = modifier,
-            viewModel = viewModel,
-            onCommentsClickListener = onCommentsClickListener,
-            nextDateIsLoading = currentState.loadingNextPosts
-        )
-
-        is NewsFeedScreenState.Initial -> {}
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = DarkBlue)
+        }
+    } else if (currentState is NewsFeedScreenState.Posts) {
+        PullToRefreshBox(
+            modifier = modifier,
+            isRefreshing = currentState.isRefreshing,
+            onRefresh = { viewModel.loadNews() }
+        ) {
+            FeedPosts(
+                posts = currentState.posts,
+                viewModel = viewModel,
+                onCommentsClickListener = onCommentsClickListener,
+                nextDateIsLoading = currentState.loadingNextPosts,
+            )
+        }
     }
 }
 
 @Composable
 fun FeedPosts(
     posts: List<FeedPost>,
-    modifier: Modifier,
     viewModel: NewFeedViewModel,
     onCommentsClickListener: (FeedPost) -> Unit,
     nextDateIsLoading: Boolean
 ) {
     LazyColumn(
-        modifier = modifier,
         contentPadding = PaddingValues(
             top = 16.dp,
             start = 8.dp,
