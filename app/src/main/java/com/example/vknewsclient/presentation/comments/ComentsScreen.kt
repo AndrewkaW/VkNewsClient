@@ -28,6 +28,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -60,8 +61,10 @@ fun CommentsScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = "Comments for FeedPost Id: ${feedPost.id}",
-                            color = MaterialTheme.colorScheme.onPrimary
+                            text = "Comments for ${feedPost.communityName}",
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     },
                     navigationIcon = {

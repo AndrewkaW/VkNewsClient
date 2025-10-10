@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.domain.PostComment
 
 class CommentsViewModel(feedPost: FeedPost) : ViewModel() {
 
@@ -18,16 +17,7 @@ class CommentsViewModel(feedPost: FeedPost) : ViewModel() {
     }
 
     fun loadComments(feedPost: FeedPost) {
-        val initialCommentsList = mutableListOf<PostComment>().apply {
-            repeat(30) {
-                add(
-                    PostComment(
-                        id = it,
-                        authorName = "Author $it",
-                    )
-                )
-            }
-        }
+        val initialCommentsList = feedPost.comments
         _commentsScreenState.value =
             CommentsScreenState.Comments(feedPost = feedPost, comments = initialCommentsList)
     }

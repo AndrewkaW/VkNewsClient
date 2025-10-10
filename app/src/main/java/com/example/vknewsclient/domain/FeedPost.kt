@@ -10,5 +10,6 @@ data class FeedPost(
     val postText: String,
     val postImageUrl: String?,
     val statistics: List<StatisticItem>,
-    val isFavorite: Boolean = Random.nextBoolean()
+    val isFavorite: Boolean = Random.nextBoolean(),
+    val comments: List<PostComment>
 )
