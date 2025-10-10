@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SwipeToDismissBox
@@ -16,6 +18,7 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -36,24 +39,30 @@ fun NewsFeedScreen(modifier: Modifier, onCommentsClickListener: (FeedPost) -> Un
 
     val currentState = screenState.value
 
-    if (currentState is NewsFeedScreenState.Initial) {
-        Box(
-            modifier = modifier,
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(color = DarkBlue)
+    if (currentState is NewsFeedScreenState.Posts) {
+
+        val lazyListState = rememberLazyListState()
+
+        LaunchedEffect(currentState.isRefreshing) {
+            if (!currentState.isRefreshing) {
+                lazyListState.animateScrollToItem(0)
+            }
         }
-    } else if (currentState is NewsFeedScreenState.Posts) {
+
         PullToRefreshBox(
             modifier = modifier,
             isRefreshing = currentState.isRefreshing,
-            onRefresh = { viewModel.loadNews() }
+            onRefresh = {
+                viewModel.reloadNews()
+            },
         ) {
+
             FeedPosts(
                 posts = currentState.posts,
                 viewModel = viewModel,
                 onCommentsClickListener = onCommentsClickListener,
                 nextDateIsLoading = currentState.loadingNextPosts,
+                lazyListState = lazyListState
             )
         }
     }
@@ -64,7 +73,8 @@ fun FeedPosts(
     posts: List<FeedPost>,
     viewModel: NewFeedViewModel,
     onCommentsClickListener: (FeedPost) -> Unit,
-    nextDateIsLoading: Boolean
+    nextDateIsLoading: Boolean,
+    lazyListState: LazyListState
 ) {
     LazyColumn(
         contentPadding = PaddingValues(
@@ -73,7 +83,8 @@ fun FeedPosts(
             end = 8.dp,
             bottom = 8.dp
         ),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        state = lazyListState
     ) {
         items(items = posts, key = { it.id }) { post ->
             val dismissBoxState = rememberSwipeToDismissBoxState(
@@ -109,7 +120,7 @@ fun FeedPosts(
         }
 
         item {
-            if (nextDateIsLoading) {
+            if (nextDateIsLoading && posts.isNotEmpty()) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -119,7 +130,7 @@ fun FeedPosts(
                 ) {
                     CircularProgressIndicator(color = DarkBlue)
                 }
-            } else {
+            } else if (posts.isNotEmpty()) {
                 SideEffect { viewModel.loadNextNews() }
             }
         }

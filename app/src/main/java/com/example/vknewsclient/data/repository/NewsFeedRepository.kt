@@ -13,14 +13,14 @@ class NewsFeedRepository {
 
     private val _feedPosts = mutableListOf<FeedPost>()
     val feedPosts: List<FeedPost>
-        get() = _feedPosts.toList()
+        get() = _feedPosts.distinctBy { it.id }.toList()
 
     private var nextPage: String? = null
 
-    suspend fun loadNewsPosts(): List<FeedPost> {
+    suspend fun loadNewsPosts() {
         val startPage = nextPage
         if (startPage == null && _feedPosts.isNotEmpty()) {
-            return feedPosts
+            return
         }
         val result = if (startPage == null) {
             ApiFactory.apiService.loadNews(newsToken, "it technology")
@@ -31,7 +31,12 @@ class NewsFeedRepository {
         nextPage = result.nextPage
         val newsList = mapper.mapNewsItemsToFeedPosts(result)
         _feedPosts.addAll(newsList)
-        return feedPosts
+    }
+
+    suspend fun reloadNewsPosts() {
+        _feedPosts.clear()
+        nextPage = null
+        loadNewsPosts()
     }
 
     fun changeLikesStatus(feedPost: FeedPost) {
@@ -54,5 +59,11 @@ class NewsFeedRepository {
         val newPost = feedPost.copy(statistics = newStatistics, isFavorite = !feedPost.isFavorite)
         val postIndex = _feedPosts.indexOf(feedPost)
         _feedPosts[postIndex] = newPost
+    }
+
+    fun deletePost(feedPost: FeedPost): List<FeedPost> {
+        val deletedPost = _feedPosts.find { it.id == feedPost.id }
+        _feedPosts.remove(deletedPost)
+        return feedPosts
     }
 }

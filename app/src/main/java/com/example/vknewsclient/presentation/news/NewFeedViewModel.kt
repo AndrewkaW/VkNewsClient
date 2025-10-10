@@ -24,45 +24,51 @@ class NewFeedViewModel() : ViewModel() {
 
     fun loadNews() {
         val currentState = _screenState.value
-        // Если это уже список постов, то включаем индикатор обновления
         if (currentState is NewsFeedScreenState.Posts) {
             _screenState.value = currentState.copy(isRefreshing = true)
         }
 
         viewModelScope.launch {
-            // Загружаем посты (при pull-to-refresh это будут самые свежие)
-            val freshPosts = repository.loadNewsPosts()
-            // Обновляем состояние с новым списком и выключаем индикатор
+            repository.loadNewsPosts()
+            val freshPosts = repository.feedPosts
             _screenState.value = NewsFeedScreenState.Posts(posts = freshPosts, isRefreshing = false)
         }
     }
 
     fun loadNextNews() {
         val currentState = _screenState.value
-        // Проверяем, что текущее состояние - это Posts и что уже не идет загрузка
         if (currentState !is NewsFeedScreenState.Posts || currentState.loadingNextPosts) {
             return
         }
 
-        // 1. Устанавливаем флаг, что началась загрузка следующей страницы
         _screenState.value = currentState.copy(loadingNextPosts = true)
 
         viewModelScope.launch {
-            // 2. Загружаем СЛЕДУЮЩУЮ порцию новостей
-            // ПРИМЕЧАНИЕ: Ваш repository.loadNewsPosts() должен уметь загружать следующую страницу
-            val newPosts = repository.loadNewsPosts()
 
-            // 3. Создаем новый объединенный список
-            val existingPosts = currentState.posts
-            val mergedPosts = existingPosts.toMutableList().apply {
-                addAll(newPosts)
-            }.toList()
+            repository.loadNewsPosts()
+            val newPosts = repository.feedPosts
 
-            // 4. Обновляем состояние с объединенным списком и выключаем индикаторы
             _screenState.value = NewsFeedScreenState.Posts(
-                posts = mergedPosts,
+                posts = newPosts,
                 loadingNextPosts = false,
-                isRefreshing = false // Также выключаем pull-to-refresh на всякий случай
+                isRefreshing = false
+            )
+        }
+    }
+
+    fun reloadNews() {
+        viewModelScope.launch {
+            _screenState.value = if (_screenState.value is NewsFeedScreenState.Posts) {
+                NewsFeedScreenState.Posts(posts = repository.feedPosts, isRefreshing = true)
+            } else {
+                return@launch
+            }
+
+            repository.reloadNewsPosts()
+            _screenState.value = NewsFeedScreenState.Posts(
+                posts = repository.feedPosts,
+                loadingNextPosts = false,
+                isRefreshing = false
             )
         }
     }
@@ -105,9 +111,7 @@ class NewFeedViewModel() : ViewModel() {
     fun deletePost(feedPost: FeedPost) {
         val currentState = _screenState.value
         if (currentState !is NewsFeedScreenState.Posts) return
-        val updatedList = currentState.posts.toMutableList()
-        val deletedPost = updatedList.find { it.id == feedPost.id }
-        updatedList.remove(deletedPost)
+        val updatedList = repository.deletePost(feedPost)
         _screenState.value = NewsFeedScreenState.Posts(posts = updatedList)
     }
 }

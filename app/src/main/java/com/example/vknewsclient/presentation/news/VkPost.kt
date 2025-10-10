@@ -85,7 +85,7 @@ fun VkPost(
 }
 
 @Composable
-private fun PostHeader(userImageUrl: String, userName: String, time: String) {
+private fun PostHeader(userImageUrl: String?, userName: String, time: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         AsyncImage(
             model = userImageUrl,
