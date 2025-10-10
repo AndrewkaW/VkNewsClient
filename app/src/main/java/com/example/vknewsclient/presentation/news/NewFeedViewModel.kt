@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vknewsclient.data.repository.NewsFeedRepository
 import com.example.vknewsclient.domain.FeedPost
-import com.example.vknewsclient.domain.StatisticItem
 import kotlinx.coroutines.launch
 
 class NewFeedViewModel() : ViewModel() {
