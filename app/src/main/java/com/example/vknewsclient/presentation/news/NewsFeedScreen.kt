@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -39,31 +40,43 @@ fun NewsFeedScreen(modifier: Modifier, onCommentsClickListener: (FeedPost) -> Un
 
     val currentState = screenState.value
 
-    if (currentState is NewsFeedScreenState.Posts) {
+    when (currentState) {
+        is NewsFeedScreenState.Posts -> {
+            val lazyListState = rememberLazyListState()
 
-        val lazyListState = rememberLazyListState()
+            LaunchedEffect(currentState.isRefreshing) {
+                if (!currentState.isRefreshing) {
+                    lazyListState.animateScrollToItem(0)
+                }
+            }
 
-        LaunchedEffect(currentState.isRefreshing) {
-            if (!currentState.isRefreshing) {
-                lazyListState.animateScrollToItem(0)
+            PullToRefreshBox(
+                modifier = modifier,
+                isRefreshing = currentState.isRefreshing,
+                onRefresh = {
+                    viewModel.reloadNews()
+                },
+            ) {
+
+                FeedPosts(
+                    posts = currentState.posts,
+                    viewModel = viewModel,
+                    onCommentsClickListener = onCommentsClickListener,
+                    nextDateIsLoading = currentState.loadingNextPosts,
+                    lazyListState = lazyListState
+                )
             }
         }
 
-        PullToRefreshBox(
-            modifier = modifier,
-            isRefreshing = currentState.isRefreshing,
-            onRefresh = {
-                viewModel.reloadNews()
-            },
-        ) {
+        NewsFeedScreenState.Initial -> {}
 
-            FeedPosts(
-                posts = currentState.posts,
-                viewModel = viewModel,
-                onCommentsClickListener = onCommentsClickListener,
-                nextDateIsLoading = currentState.loadingNextPosts,
-                lazyListState = lazyListState
-            )
+        NewsFeedScreenState.Loading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = DarkBlue)
+            }
         }
     }
 }
@@ -112,8 +125,6 @@ fun FeedPosts(
                     onLikeClickListener = {
                         viewModel.changeLike(post)
                     },
-                    onShareClickListener = { viewModel.updateCount(feedPost = post, item = it) },
-                    onViewsClickListener = { viewModel.updateCount(feedPost = post, item = it) },
                     onCommentClickListener = { onCommentsClickListener(post) },
                 )
             }
